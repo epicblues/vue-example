@@ -10,33 +10,63 @@
 <body>
     <!-- Vue 렌더링 영역 -->
     <div id="app">
-        <global-header></global-header>
-        <local-component></local-component>
-        <local-component2></local-component2>
+        <global-header v-bind:text="content"></global-header>
+        <h2>{{content}}</h2>
+        <!-- 부모 -> 자식 데이터 내려보내기 : Props를 이용할 수 있다. -->
+        <local-component v-bind:propsdata="message"></local-component>
+        <local-component2 v-on:send-msg="getMsg"></local-component2>
     </div>
 
     <script>
         // 전역 컴포넌트: 인스턴스 내에서 어디든지 사용할 수 있는 컴포넌트
         Vue.component("global-header", {
-            template: '<div><h1>{{title}}</h1></div>',
-            data:function() {
+            template: '<div><h1>{{text}}</h1></div>',
+            data() {
                 return {
                     title:'global header'
                 }
-            }
+            },
+            props: ['text']
+            
+            
         })
-
-
         const cmp1 = {
-            template : "<div><h2>Local Component</h2></div>"
+            template : `
+            <div>
+                <h2>Local Componenet</h2>
+                <h3>{{propsdata}}</h3>
+            </div>`,
+            props:['propsdata'] // 부모로부터 전달받은 props 데이터
         }
-        
+        // 새 인스턴스 생성
         const app = new Vue({
             el : "#app",
+            data() {
+                return {
+                    content : "Vue Instance",
+                    message : "Message From Parent" // 자식에게 보낼 데이터
+                }
+            },
             components : {
                 'local-component' : cmp1,
                 'local-component2' : {
-                    template:"<div><h3>local Component2</h3></div>"
+                    template:
+                        `<div>
+                            <h3>local Component2</h3>
+                            <button v-on:click="sendMessage">Send To Parent</button>
+                        </div>`,
+                    methods: {
+                        sendMessage() {
+                            console.log("1차 자식 이벤트",event);
+                            this.$emit('send-msg', 'Message From Child');
+                        }
+                    }
+                }
+            },
+            methods : {
+                getMsg(message) {
+                    console.log(event.target);
+                    console.log("자식으로부터 전달된 메시지",message);
                 }
             }
             
