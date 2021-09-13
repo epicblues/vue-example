@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practice</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        <ol>
+            <li v-for="todo in todos" >
+                {{todo.text}}
+            </li>
+        </ol>
+        <input type="text" v-model="message" v-on:keyup="changeName">
+        <button v-if="showBtn" >버튼 보여줘!</button>
+    </div>
+    <div id="app7">
+        <ol>
+            <todo-item  v-for="todo in groceryList" v-bind:key="todo.id" v-bind:text="todo.text">
+            </todo-item>
+        </ol>
+    </div>
+    <div id="example">
+        <p>원본 메시지 : "{{message}}"</p>
+        <p>역순으로 표시한 메시지 : "{{reversedMessage}}"</p>
+    </div>
+
+    <div id="demo">
+        {{fullName}}
+    </div>
+
+    <div id="watch-example">
+        <p>
+            yes/no 질문을 물어보세요:
+            <input type="text" v-model="question">
+        </p>
+        <p>
+            {{answer}}
+        </p>
+    </div>
+    <script src="https://unpkg.com/axios@0.12.0/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/lodash@4.13.1/lodash.min.js"></script>
+
+    <script>
+        const watch2 = new Vue({
+            el: "#watch-example",
+            data() {
+                return {
+                    question:'',
+                    answer:'질문을 하기 전에는 대답할 수 없습니다'
+                }
+            },
+            watch: {
+                question(newQuestion) {
+                    this.answer = "입력을 기다리는중...";
+                    this.debouncedGetAnswer();
+                }
+            },
+
+            created() {
+                this.debouncedGetAnswer = _.debounce(this.getAnswer,500)
+            },
+            methods: {
+                getAnswer() {
+                    if(this.question.indexOf('?') === -1) {
+                        this.answer="질문에는 일반적으로 ? 가 포함됩니다."
+                        return;
+                    } 
+                    this.answer = '생각중...'
+                    var vm = this;
+                    axios.get('https://yesno.wtf/api')
+                        .then(response => {
+                            vm.answer = _.capitalize(response.data.answer)
+                        })
+                        .catch(error => {
+                            vm.answer = "에러! API 요청에 오류가 있씁니다" + error
+                        })
+                }
+            }
+        })
+
+
+
+        const testWatch = new Vue({
+            el:"div#demo",
+            data() {
+                return {
+                    firstName:"Kim",
+                    lastName:"Minsung",
+                    
+                }
+            },
+            computed : {
+                fullName : {
+                    // getter(호출 표시 없이 변수처럼 사용)와 setter(호출 표시 인자값 없이 그냥 값 대입하면 알아서 매개변수에 맞게 set 메소드 실행)
+                    get : function() {
+                        return this.firstName + ' ' + this.lastName
+                    },
+                    set : function(newName) {
+                        const names = newName.split(' ')
+                        this.firstName = names[0];
+                        this.lastName = names[1];
+                    }
+                    
+                }
+            },
+            created() {
+                this.$on('change-first', function(firstName)  {
+                    this.firstName = firstName;
+                } )
+            }
+
+        })
+
+        const testComputed = new Vue({
+            el : "#example",
+            data(){
+                return {
+                    message : "안녕하세요"
+                }
+            },
+            computed : {
+                reversedMessage() {
+                    return this.message.split('').reverse().join('');
+                }
+            }
+        })
+
+
+
+        const todoItem = Vue.component('todo-item', {
+            template : `<li> {{text}}</li>`,
+            props: {
+                text: String
+            }
+        })
+
+        const app7 = new Vue({
+            el:"#app7",
+            data() {
+                return {
+                    groceryList : [
+                        {id : 0, text: 'vegetables'},
+                        {id : 1, text: 'pizza'},
+                        {id : 2, text: 'pineapple'}
+                    ]
+                }
+            }
+        })
+    
+        const app = new Vue({
+            el:'#app',
+            data() {
+                return {
+                    todos: [
+                        {text:'JavaScript 배우기'},
+                        {text:'Vue 배우기'},
+                        {text:'HTML 배우기'}
+                    ],
+                    message:"kmsbabo",
+                    showBtn:false
+                }
+            },
+            methods : {
+                changeName() {
+                    testWatch.$emit('change-first', this.message);
+                }
+            }
+        })
+    </script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practice2</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+    <div id="todo-list-example">
+        <form v-on:submit.prevent="addNewToDo">
+            <label for="new-todo">Add a todo</label>
+            <input v-model="nextToDoText" id="new-todo" placeholder="e.g : Feed The Cat">
+            <button>Add</button>
+        </form>
+        <ul>
+            <li is="todo-item" v-for="(todo,index) in todos" v-bind:key="todo.id" v-bind:title="todo.title" v-on:remove="todos.splice(index,1)"></li>
+        </ul>
+    </div>
+
+    <script>
+        const todoItem = Vue.component("todo-item", {
+            template : `<li> {{title}}<button @click="remove"> Remove</button></li>`,
+            props : ['title'],
+            methods : {
+                remove() {
+                    
+                    this.$emit('remove');
+                }
+            }
+        })
+
+
+        const todoList = new Vue({
+            el:"#todo-list-example",
+            data() {
+                return {
+                    todos : [
+                        {id : 1, title:"do The Dishes"},
+                        {id : 2, title:"Play Games"},
+                        {id : 3, title:"Sleep"},
+                    ],
+                    nextToDoText:'',
+                    id: 3
+                }
+            },
+            methods: {
+                addNewToDo() {
+                    
+                    console.log('clicked');
+                    this.id++;
+                    this.todos.push({id : this.id, title:this.nextToDoText})
+                    this.nextToDoText = '';
+                }
+            }
+        })
+    </script>
+</body>
+</html>
