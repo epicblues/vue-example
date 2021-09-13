@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue.js Example</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+    
+    <div id="app">
+        {{message}}
+        <!-- 데이터의 message 영역을 렌더링 해달라고 '선언' -->
+    </div>
+
+    <script>
+        // document.getElementById("app").innerHTML = "Hello JavaScript";
+        // document.getElementById("app").innerHTML = "{{message}}";
+
+        // Vue Instance 만들기
+        const app = new Vue({
+            el: "#app", // Vue를 마운트시킬 HTMLElement 선택자.
+            // 모델 정의 영역 -> 데이터 바인딩 영역과 연결. 감시 시작. 연결된 일치하는{{콧수염 문법}}과 연결
+
+
+            data : {
+                message : "Hello Vue.js",
+            },
+            
+            //Life Cycle Hook
+
+            beforeCreate : function () {
+                // 인스턴스 생성 이전 단계의 라이프사이클
+                console.log('beforeCreate');
+                console.log('data : ', this.message); //undefined : 모델이 정의되지않았다.
+            },
+
+            created : function () {
+                // 인스턴스가 생성된 단계
+                // 모델과 연결 가능
+                console.log('created');
+                console.log('data : ', this.message);
+                // 이 단계에서는 API 서버로부터 데이터를 연동시키기 좋은 단계
+
+                console.log('el : ', this.$el); // 아직 DOM과 연결되지 않았다.
+                // UI 관련 작업에 적합하지 않다.
+
+                
+            },
+
+            mounted : function ()  {
+                // View와 binding 된 관계
+                console.log('mounted');
+                console.log('data : ', this.message);
+                console.log('el : ', this.$el); // el요소가 binding 되었다
+                // Dom 관련 작업을 할 수 있다.
+                console.log("DOM: " + this.$el.innerText);
+                setTimeout(() => {
+                    this.message = "babo";
+                },5000)
+            },
+
+            updated() {
+                console.log('updated');
+                console.log('data : ', this.message);
+                console.log('el : ', this.$el);
+            }
+
+        })
+       
+        
+        
+    </script>
+</body>
+</html>
