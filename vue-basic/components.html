@@ -17,7 +17,16 @@
         <local-component2 v-on:send-msg="getMsg"></local-component2>
     </div>
 
+    <div id="eventBusEx">
+        <h2>Event Bus Receiver</h2>
+        <p>{{message}}</p>
+    </div>
     <script>
+        // 부모 자식간 관계를 벗어난 데이터 통신을 위한 별도의 vue 객체
+        const eventBus = new Vue();
+
+        
+
         // 전역 컴포넌트: 인스턴스 내에서 어디든지 사용할 수 있는 컴포넌트
         Vue.component("global-header", {
             template: '<div><h1>{{text}}</h1></div>',
@@ -58,7 +67,10 @@
                     methods: {
                         sendMessage() {
                             console.log("1차 자식 이벤트",event);
+                            // 부모로 이벤트 발생
                             this.$emit('send-msg', 'Message From Child');
+                            // eventBus(빈 Vue Instance)에 이벤트를 발생
+                            eventBus.$emit('triggerEventBus', 'Message From Other')
                         }
                     }
                 }
@@ -69,10 +81,28 @@
                     console.log("자식으로부터 전달된 메시지",message);
                 }
             }
-            
-
         })
-        
+
+        const eventBusEx = new Vue({
+            el:'#eventBusEx',
+            data() {
+                return {
+                    message : "Message를 대기 중입니다"
+                }
+            },
+            created() {
+                const instance = this;
+                // 인스턴스 생성 LifeCycle Hook,
+                // eventBus에서 발생하는 이벤트에 처리기를 등록
+                // 즉 이벤트를 처리하는 것은 eventBus다 eventBusEx가 아니라
+                // 따라서 created를통해 eventBusEx 인스턴스가 만들어졌으므로
+                // 이 인스턴스 주소를 eventBus에 전달해서 eventBus가 eventBusEx의 데이터를 수정할 수 있도록 한다?
+                eventBus.$on('triggerEventBus', function(message) {
+                    console.log(this);
+                    instance.message = message;
+                })
+            }
+        })
     </script>
 </body>
 </html>
