@@ -11,7 +11,7 @@
     <!-- Vue 렌더링 영역 -->
     <div id="app">
         <global-header v-bind:text="content"></global-header>
-        <h2>{{content}}</h2>
+        <h2>{{message}}</h2>
         <!-- 부모 -> 자식 데이터 내려보내기 : Props를 이용할 수 있다. -->
         <local-component v-bind:propsdata="message"></local-component>
         <local-component2 v-on:send-msg="getMsg"></local-component2>
@@ -24,12 +24,16 @@
     <script>
         // 부모 자식간 관계를 벗어난 데이터 통신을 위한 별도의 vue 객체
         const eventBus = new Vue();
+        
+        eventBus.$on('triggerEventBus', function (message) {
+                eventBusEx.message = message // 이벤트 리스너 탑재 eventBusEx의 선언은 코드가 진행되기 이전에 이루어지므로 okay
+        })
 
         
 
         // 전역 컴포넌트: 인스턴스 내에서 어디든지 사용할 수 있는 컴포넌트
-        Vue.component("global-header", {
-            template: '<div><h1>{{text}}</h1></div>',
+        Vue.component("GlobalHeader", {
+            template: '<div className="globalheader"><h1>{{text}}</h1></div>',
             data() {
                 return {
                     title:'global header'
@@ -58,7 +62,7 @@
             },
             components : {
                 'local-component' : cmp1,
-                'local-component2' : {
+                'LocalComponent2' : {
                     template:
                         `<div>
                             <h3>local Component2</h3>
@@ -72,6 +76,9 @@
                             // eventBus(빈 Vue Instance)에 이벤트를 발생
                             eventBus.$emit('triggerEventBus', 'Message From Other')
                         }
+                    },
+                    mounted() {
+                        console.log(this);
                     }
                 }
             },
@@ -97,10 +104,10 @@
                 // 즉 이벤트를 처리하는 것은 eventBus다 eventBusEx가 아니라
                 // 따라서 created를통해 eventBusEx 인스턴스가 만들어졌으므로
                 // 이 인스턴스 주소를 eventBus에 전달해서 eventBus가 eventBusEx의 데이터를 수정할 수 있도록 한다?
-                eventBus.$on('triggerEventBus', function(message) {
-                    console.log(this);
-                    instance.message = message;
-                })
+                // eventBus.$on('triggerEventBus', function(message) {
+                    
+                //     instance.message = message;
+                // })
             }
         })
     </script>

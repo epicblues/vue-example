@@ -15,9 +15,15 @@
             <button>Add</button>
         </form>
         <ul>
-            <li is="todo-item" v-for="(todo,index) in todos" v-bind:key="todo.id" v-bind:title="todo.title" v-on:remove="todos.splice(index,1)"></li>
+            <li is="todo-item" v-for="(a,b) in todos" v-bind:key="a.id" v-bind:title="a.title" v-on:remove="todos.splice(b,1)"></li>
         </ul>
     </div>
+
+    <div id="template-sample">
+        
+    </div>
+
+
 
     <script>
         const todoItem = Vue.component("todo-item", {

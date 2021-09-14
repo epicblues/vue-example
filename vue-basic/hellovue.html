@@ -12,11 +12,13 @@
     <div id="app">
         {{message}}
         <!-- 데이터의 message 영역을 렌더링 해달라고 '선언' -->
+        <!-- Vue 라이브러리에 데이터와 dom을 연결시키는 코드들이 숨어 있다.(지시적) -->
     </div>
 
     <script>
         // document.getElementById("app").innerHTML = "Hello JavaScript";
         // document.getElementById("app").innerHTML = "{{message}}";
+        // -> 기존의 지시적 프로그래밍 패러다임
 
         // Vue Instance 만들기
         const app = new Vue({

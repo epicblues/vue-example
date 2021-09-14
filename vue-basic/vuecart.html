@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    
+</head>
+<body>
+    <div id="app">
+        <cart-header></cart-header>
+        <shop-list></shop-list>
+        <cart-input></cart-input>
+        <bought-list></bought-list>
+        <cart-footer></cart-footer>
+    </div>
+
+
+    <script>
+        const ch = {
+                template: `<h1>{{title}}</h1>`,
+                data() {
+                    return {
+                        title : "Vue Cart"
+                    }
+                }
+            };
+        const sl = {
+                template: `<ul>
+                    <li v-for=""></li>
+                    </ul>`,
+                props= ["buy"]
+
+            };
+        const ci = {
+                template: `<header></header>`
+            };
+        const bl = {
+                template: `<header></header>`
+            };
+        const cf = {
+                template: `<p>&copy; Bit Academy</p>`
+            };
+
+
+
+        const app = new Vue({
+            el : "#app",
+            components : {
+                CartHeader : ch,
+                ShopList : sl,
+                CartInput : ci,
+                BoughtList:bl,
+                CartFooter:cf
+            },
+            data : {
+                toBuy : [
+                    '무',
+                    '배추',
+                    '고춧가루'
+                ],
+                bought: [
+                    '쪽파'
+                ]
+            }
+        })
+
+        
+
+    </script>
+</body>
+</html>
