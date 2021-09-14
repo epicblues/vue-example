@@ -13,13 +13,16 @@
             margin:7px 3px;
             padding:7px 10px;
         }
+        input:focus {
+            background-color: red;
+        }
     </style>
 </head>
 <body>
     <div id="app">
         <cart-header class="container"></cart-header>
         <shop-list v-if="!emptyBuy" :buy="items" v-on:click-buy="buyItem" class="container"></shop-list>
-        <div class="container" v-else>
+        <div v-else class="container">
             <h2>살 물건이 없습니다...</h2>
         </div>
         <cart-input @add-list="addList" class="container"></cart-input>
@@ -31,9 +34,9 @@
 
     <script>
         const ch = {
-                template: `<h1>{{title}}</h1>`,
+            template: `<h1>{{title}}</h1>`,
                 data() {
-                    return {
+                return {
                         title : "Vue Cart"
                     }
                 }
@@ -43,9 +46,9 @@
                 <div>
                     <h2>살 물건들</h2>
                     <ul>
-                    <li :style="{marginBottom:'4px'}" v-for="item in buy" v-if="!item.buy">{{item.name}} 
-                        <button @click="() => {clickBuy(item)}" :style="{float:'right'}">구매</button>
-                    </li>
+                        <li :style="{marginBottom:'4px'}" v-for="item in buy" v-if="!item.buy">{{item.name}} 
+                            <button @click="() => {clickBuy(item)}" :style="{float:'right'}">구매</button>
+                        </li>
                     </ul>
                 </div>`,
                 props: ["buy"],
@@ -97,7 +100,6 @@
                 },
                 methods : {
                     deleteList(name) {
-                        console.log(name);
                         this.$emit('delete-list', name);
                     },
                     cancelBuy(name) {
@@ -127,7 +129,10 @@
                     {name : "쪽파", buy:true},
                     {name : "고춧가루", buy:false},
                 ],
-                watchBought: false
+                watchBought: false,
+                dataFunction() {
+                    console.log(this);
+                } // This Scope가 전역 객체인 Window로 설정되어 있다.
             },
             methods : {
                 buyItem(item) {
@@ -144,6 +149,7 @@
                     this.items.push({name,buy:false});
                 },
                 deleteList(name) {
+                    
                     this.items = this.items.filter(item => item.name !== name);
                 },
                 cancelBuy(name) {
