@@ -18,10 +18,12 @@
 <body>
     <div id="app">
         <cart-header class="container"></cart-header>
-        <shop-list :buy="items" v-on:click-buy="buyItem" class="container"></shop-list>
+        <shop-list v-if="!emptyBuy" :buy="items" v-on:click-buy="buyItem" class="container"></shop-list>
+        <div class="container" v-else>
+            <h2>살 물건이 없습니다...</h2>
+        </div>
         <cart-input @add-list="addList" class="container"></cart-input>
         <div class="container"> <input type="checkbox" v-model="watchBought"> <label>산 물건 보기</label></div>
-       
         <bought-list class="container" :bought="items" v-show="watchBought" @delete-list="deleteList" @cancel-buy="cancelBuy"></bought-list>
         <cart-footer class="container"></cart-footer>
     </div>
@@ -66,8 +68,15 @@
                 },
                 methods : {
                     addList() {
+                        if (!this.toAdd.trim()) {
+                            alert('추가할 아이템 이름을 입력해 주세요!');
+                            console.log(event.target.children[0].focus());
+                            return;
+                        }
                         this.$emit('add-list', this.toAdd);
                         this.toAdd='';
+                        
+                        
                     }
                 } 
             };
@@ -77,8 +86,8 @@
                         <h2>산 물건들</h2>
                     <ul >
                         <li :style="{marginBottom:'4px'}" v-for="item in bought" v-if="item.buy">{{item.name}}
-                        <button :style="{float:'right'}" @click="() => {deleteList(item.name)}">삭제</button>
-                        <button :style="{float:'right'}" @click="() => {cancelBuy(item.name)}">취소</button>
+                            <button :style="{float:'right'}" @click="() => {deleteList(item.name)}">삭제</button>
+                            <button :style="{float:'right'}" @click="() => {cancelBuy(item.name)}">취소</button>
                         </li>
                     </ul>
                     </div>
@@ -141,6 +150,11 @@
                     this.items = this.items.map(origin =>
                         origin.name === name ? { ...origin, buy: false } : origin
                     );
+                }
+            },
+            computed : {
+                emptyBuy() {
+                    return this.items.filter(item => !item.buy).length === 0;
                 }
             }
             
