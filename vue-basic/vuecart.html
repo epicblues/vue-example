@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,14 +11,16 @@
         .container {
             background-color: bisque;
             border: 4px gray solid;
-            margin:7px 3px;
-            padding:7px 10px;
+            margin: 7px 3px;
+            padding: 7px 10px;
         }
+
         input:focus {
             background-color: red;
         }
     </style>
 </head>
+
 <body>
     <div id="app">
         <cart-header class="container"></cart-header>
@@ -27,129 +30,158 @@
         </div>
         <cart-input @add-list="addList" class="container"></cart-input>
         <div class="container"> <input type="checkbox" v-model="watchBought"> <label>산 물건 보기</label></div>
-        <bought-list class="container" :bought="items" v-show="watchBought" @delete-list="deleteList" @cancel-buy="cancelBuy"></bought-list>
+        <bought-list class="container" :bought="items" v-show="watchBought" @delete-list="deleteList"
+            @cancel-buy="cancelBuy"></bought-list>
         <cart-footer class="container"></cart-footer>
     </div>
 
 
     <script>
         const ch = {
-            template: `<h1>{{title}}</h1>`,
-                data() {
+            template: `<h1>{{upperTitle}}</h1>`,
+            data() {
                 return {
-                        title : "Vue Cart"
-                    }
+                    title: "Vue Cart"
                 }
-            };
+            },
+            computed: {
+                upperTitle() { return this.title.toUpperCase() }
+            }
+        };
         const sl = {
-                template: `
+            template: `
                 <div>
                     <h2>살 물건들</h2>
                     <ul>
-                        <li :style="{marginBottom:'4px'}" v-for="item in buy" v-if="!item.buy">{{item.name}} 
+                        <li :style="{marginBottom:'4px'}" v-for="item in filteredBuy">{{item.name}} 
                             <button @click="() => {clickBuy(item)}" :style="{float:'right'}">구매</button>
                         </li>
                     </ul>
                 </div>`,
-                props: ["buy"],
-                methods : {
-                    clickBuy(item) {
-                        this.$emit('click-buy', item)
-                    }
+            props: ["buy"],
+            methods: {
+                clickBuy(item) {
+                    this.$emit('click-buy', item)
                 }
+            },
+            computed: {
+                filteredBuy() {
+                    // 전달 받을 Shopping Items로부터
+                    // item.buy=false 인 것만 리턴
+                    return this.buy.filter(item => !item.buy);
+                }
+            }
 
-            };
+        };
         const ci = {
-                template: `
-                    <form @submit.prevent='addList'><input v-model="toAdd">
+            template: `
+                    <form @submit.prevent='addList'>
+                        <p>{{message}}</p>
+                        <input v-model="toAdd">
                         <button>추가</button>
                     </form>`,
-                data() {
-                    return {
-                        toAdd:''
+            data() {
+                return {
+                    toAdd: '',
+                    message: '살 물건을 입력해 주세요!'
+                }
+            },
+            methods: {
+                addList() {
+                    if (!this.toAdd.trim()) {
+                        alert('추가할 아이템 이름을 입력해 주세요!');
+                        console.log(event.target.children[0].focus());
+                        return;
                     }
-                },
-                methods : {
-                    addList() {
-                        if (!this.toAdd.trim()) {
-                            alert('추가할 아이템 이름을 입력해 주세요!');
-                            console.log(event.target.children[0].focus());
-                            return;
-                        }
-                        this.$emit('add-list', this.toAdd);
-                        this.toAdd='';
-                        
-                        
+                    this.$emit('add-list', this.toAdd);
+                    this.toAdd = '';
+
+
+                }
+            },
+            watch: { // 데이터 감시
+                toAdd(item) {  // toAdd data 감시
+                    console.log(item);
+                    if (item.trim().length > 0) {
+                        this.message = "목록 제출 가능합니다.";
+                    } else {
+                        this.message = "살 물건을 입력해 주세요!";
                     }
-                } 
-            };
+                }
+            }
+        };
         const bl = {
-                template: `
+            template: `
                     <div>
                         <h2>산 물건들</h2>
                     <ul >
-                        <li :style="{marginBottom:'4px'}" v-for="item in bought" v-if="item.buy">{{item.name}}
+                        <li :style="{marginBottom:'4px'}" v-for="item in boughtItems" >{{item.name}}
                             <button :style="{float:'right'}" @click="() => {deleteList(item.name)}">삭제</button>
                             <button :style="{float:'right'}" @click="() => {cancelBuy(item.name)}">취소</button>
                         </li>
                     </ul>
                     </div>
                 `,
-                props:{
-                    bought:Array
+            props: {
+                bought: Array
+            },
+            methods: {
+                deleteList(name) {
+                    this.$emit('delete-list', name);
                 },
-                methods : {
-                    deleteList(name) {
-                        this.$emit('delete-list', name);
-                    },
-                    cancelBuy(name) {
-                        this.$emit('cancel-buy', name);
-                    }
+                cancelBuy(name) {
+                    this.$emit('cancel-buy', name);
                 }
-            };
+            },
+            computed: {
+                boughtItems() {
+                    return this.bought.filter(item => item.buy);
+                }
+            }
+        };
         const cf = {
-                template: `<p>&copy; Bit Academy</p>`
-            };
+            template: `<p>&copy; Bit Academy</p>`
+        };
 
 
 
         const app = new Vue({
-            el : "#app",
-            components : {
-                CartHeader : ch,
-                ShopList : sl,
-                CartInput : ci,
-                BoughtList:bl,
-                CartFooter:cf
+            el: "#app",
+            components: {
+                CartHeader: ch,
+                ShopList: sl,
+                CartInput: ci,
+                BoughtList: bl,
+                CartFooter: cf
             },
-            data : {
-                items : [
-                    {name : "무", buy:false},
-                    {name : "배추", buy:false},
-                    {name : "쪽파", buy:true},
-                    {name : "고춧가루", buy:false},
+            data: {
+                items: [
+                    { name: "무", buy: false },
+                    { name: "배추", buy: false },
+                    { name: "쪽파", buy: true },
+                    { name: "고춧가루", buy: false },
                 ],
                 watchBought: false,
                 dataFunction() {
                     console.log(this);
                 } // This Scope가 전역 객체인 Window로 설정되어 있다.
             },
-            methods : {
+            methods: {
                 buyItem(item) {
-                    this.items =  this.items.map(origin =>
+                    this.items = this.items.map(origin =>
                         origin.name === item.name ? { ...origin, buy: true } : origin
                     );
                 },
                 addList(name) {
-                    
-                    if(this.items.find(item => item.name===name)) {
+
+                    if (this.items.find(item => item.name === name)) {
                         alert('이미 등록된 물건입니다.');
                         return false;
                     }
-                    this.items.push({name,buy:false});
+                    this.items.push({ name, buy: false });
                 },
                 deleteList(name) {
-                    
+
                     this.items = this.items.filter(item => item.name !== name);
                 },
                 cancelBuy(name) {
@@ -158,16 +190,17 @@
                     );
                 }
             },
-            computed : {
+            computed: {
                 emptyBuy() {
                     return this.items.filter(item => !item.buy).length === 0;
                 }
             }
-            
+
         })
 
-        
+
 
     </script>
 </body>
+
 </html>

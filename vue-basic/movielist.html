@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,105 +11,112 @@
   <style>
     header {
       background-color: pink;
-      margin:0px 20vh;
+      margin: 0px 20vh;
     }
 
     body {
       text-align: center;
     }
+
     .container {
-      margin:auto;
-    }
-    img {
-      width:150px;
-      height:150px;
-      float:left;
-      padding:10px;
-    }
-    .movie {
-      width:380px;
-      height:175px;
-      background-color:cadetblue;
-      margin:0px 0px;
-      display:inline-block;
-    }
-    .movie:nth-child(even) {
-      background-color:palevioletred;
+      margin: auto;
     }
 
-    .movie h4,p {
-      margin:0px;
-      padding:15px 10px
+    img {
+      width: 150px;
+      height: 150px;
+      float: left;
+      padding: 10px;
+    }
+
+    .movie {
+      width: 380px;
+      height: 175px;
+      background-color: cadetblue;
+      margin: 0px 0px;
+      display: inline-block;
+    }
+
+    .movie:nth-child(even) {
+      background-color: palevioletred;
+    }
+
+    .movie h4,
+    p {
+      margin: 0px;
+      padding: 15px 10px
     }
 
     .movie h4 {
-      font-size:1.3em
+      font-size: 1.3em
     }
   </style>
 </head>
-  <div id="app">
-    <movie-header></movie-header>
-    <movie-list :movies="movies"></movie-list>
-  </div>
-  <script>
-    const Header = {
-      template:`
+<div id="app">
+  <movie-header></movie-header>
+  <movie-list :movies="movies"></movie-list>
+</div>
+<script>
+  const Header = {
+    template: `
       <header>
         <h1>{{title}}</h1>
       </header>`,
-      data() {
-        return {
-          title:'Pixar Movies !'
-        }
+    data() {
+      return {
+        title: 'Pixar Movies !'
       }
     }
-    const movie = {
-      template:`
+  }
+  const movie = {
+    template: `
       <div class="movie">
         <img :src = "'http://localhost:3000/images/' + movieInfo.image"/>
         <h4>{{movieInfo.title}}</h4>
         <p>감독 : {{movieInfo.director}}</p>
         <p>개봉년도 : {{movieInfo.year}}</p>
       </div>`
-      ,
-      props : ['movieInfo']
-    }
+    ,
+    props: ['movieInfo']
+  }
 
-    const MovieList = {
-      template: `
+  const MovieList = {
+    template: `
         <div class="container">
           <movie v-for="movie in movies" :movieInfo="movie"></movie>
         </div>`
-      ,components : {
-        movie
-      },
-      props : ['movies']
-    }
+    , components: {
+      movie
+    },
+    props: ['movies']
+  }
 
-    const app = new Vue({
-      el:"#app",
-      data: {
-        movies: [],
-        
-      },
-      created() {
-        axios.get('http://localhost:3000/movies')
+  const app = new Vue({
+    el: "#app",
+    data: {
+      movies: [],
+
+    },
+    created() {
+      axios.get('http://localhost:3000/movies')
         .then(res => res.data)
         .then(data => {
           this.movies = data.movies; // side effect
         })
         .catch(console.error);
-      },
-      components: {
-        MovieHeader:Header,
-        MovieList
-      },
-      mounted() {
-        console.log(this.movies);
-      }
-    })
-  </script>
+    },
+    components: {
+      MovieHeader: Header,
+      MovieList
+    },
+    mounted() {
+      console.log(this.movies);
+    }
+  })
+</script>
+
 <body>
-  
+
 </body>
+
 </html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+</head>
+<body>
+  <div class="" id="app">
+    <h1>Computed</h1>
+    <p>제품 가격 : <input type="text" v-model.number="price"></p>
+    <p>배송비 : <input type="text" v-model.number="deliveryCost"></p>
+    <p>최종 가격 : {{totalPrice}}</p>
+
+    <h1>Watch</h1>
+    <fieldset>
+      <legend>회원 가입</legend>
+      <p>
+        <label for="userid">아이디</label>
+        <input type="text" id="userid" v-model.trim="userId">
+        <span>{{userIdMessage}}</span>
+      </p>
+      
+    </fieldset>
+  </div>
+
+
+  <script>
+    const app = new Vue({
+      el : "#app",
+      data() {
+        return {
+          price : 0,
+          deliveryCost : 0,
+          userId:'',
+          userIdMessage:'아이디를 입력해 주세요'
+        }
+      },
+      computed: {
+        totalPrice() {
+          return this.price + this.deliveryCost
+        }
+      },
+      watch: {
+        userId(data) {
+          if (data.length === 0) {
+            this.userIdMessage = "아이디를 입력해 주세요"
+          } else if (data.length < 10){
+            this.userIdMessage = "아이디는 10글자 이상이어야 합니다."
+          }
+          else if(data.length >= 15) {
+            this.userIdMessage = "글자 수가 지나치게 많습니다."
+          } else {
+            this.userIdMessage = "okay"
+          }
+        }
+      }
+    })
+  </script>
+</body>
+</html>
