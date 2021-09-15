@@ -42,10 +42,4 @@ export default {
 </script>
 
 <style scoped>
-li:nth-child(even) {
-  background: pink;
-}
-li:nth-child(odd) {
-  background: yellow;
-}
 </style>
